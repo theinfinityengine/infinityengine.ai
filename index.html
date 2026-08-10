@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Infinity Engine</title>
+<meta name="description" content="Infinity Engine — infinityengine.ai" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --violet: #8b5cf6;
+    --blue: #3b82f6;
+    --emerald: #10b981;
+  }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: #000;
+    color: #fff;
+    overflow-x: hidden;
+    min-height: 100vh;
+    position: relative;
+  }
+  /* Animated gradient wash */
+  .bg-gradient {
+    position: fixed; inset: 0; z-index: 0;
+    background:
+      radial-gradient(circle at 25% 20%, rgba(139,92,246,0.35), transparent 45%),
+      radial-gradient(circle at 80% 75%, rgba(59,130,246,0.30), transparent 50%),
+      radial-gradient(circle at 55% 50%, rgba(16,185,129,0.15), transparent 55%);
+    animation: drift 18s ease-in-out infinite alternate;
+  }
+  @keyframes drift {
+    0%   { transform: scale(1) translate(0,0); }
+    100% { transform: scale(1.15) translate(-3%, 2%); }
+  }
+  /* Grid overlay */
+  .bg-grid {
+    position: fixed; inset: 0; z-index: 0; opacity: 0.12;
+    background-image:
+      linear-gradient(rgba(139,92,246,0.5) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(139,92,246,0.5) 1px, transparent 1px);
+    background-size: 60px 60px;
+    transform: perspective(600px) rotateX(60deg) translateY(-40px) scale(1.4);
+    transform-origin: center top;
+    mask-image: linear-gradient(to bottom, #000 0%, transparent 55%);
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 55%);
+  }
+  /* Floating dots */
+  .dots { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+  .dot {
+    position: absolute; border-radius: 50%;
+    background: #a78bfa; box-shadow: 0 0 10px rgba(139,92,246,0.8);
+    animation: float linear infinite;
+  }
+  @keyframes float {
+    from { transform: translateY(0); opacity: 0; }
+    10%  { opacity: 0.8; }
+    90%  { opacity: 0.8; }
+    to   { transform: translateY(-110vh); opacity: 0; }
+  }
+
+  .wrap {
+    position: relative; z-index: 10;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 40px 24px;
+  }
+
+  .logo {
+    width: 96px; height: 96px; border-radius: 24px;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--violet), #a855f7, var(--blue));
+    box-shadow: 0 20px 60px rgba(139,92,246,0.5);
+    border: 1px solid rgba(255,255,255,0.2);
+    margin-bottom: 36px;
+    animation: bob 4s ease-in-out infinite;
+  }
+  @keyframes bob { 0%,100% { transform: translateY(0);} 50% { transform: translateY(-14px);} }
+  .logo svg { width: 52px; height: 52px; }
+
+  .badge {
+    display: inline-block;
+    font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+    color: #c4b5fd; font-weight: 700;
+    padding: 7px 16px; border-radius: 999px;
+    border: 1px solid rgba(139,92,246,0.4);
+    background: rgba(139,92,246,0.08);
+    margin-bottom: 28px;
+  }
+
+  h1 {
+    font-size: clamp(44px, 9vw, 104px);
+    font-weight: 900; letter-spacing: -0.03em; line-height: 0.95;
+    background: linear-gradient(135deg, #fff 0%, #e9d5ff 40%, #a78bfa 100%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 10px 40px rgba(139,92,246,0.4));
+  }
+  h1 .line2 {
+    background: linear-gradient(135deg, #60a5fa 0%, #8b5cf6 50%, #ec4899 100%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  .subline {
+    margin-top: 26px; font-size: clamp(16px, 2.2vw, 20px);
+    color: #d1d5db; max-width: 520px;
+  }
+
+  .contact-note {
+    margin-top: 40px; font-size: 15px; color: #9ca3af;
+  }
+  .contact-note a {
+    display: inline-flex; align-items: center; gap: 8px;
+    margin-top: 14px;
+    padding: 14px 26px; border-radius: 999px;
+    font-size: 16px; font-weight: 700; text-decoration: none;
+    background: linear-gradient(90deg, var(--violet), var(--blue));
+    color: #fff; box-shadow: 0 10px 30px rgba(139,92,246,0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .contact-note a:hover { transform: scale(1.05); box-shadow: 0 14px 40px rgba(139,92,246,0.6); }
+
+  footer {
+    position: relative; z-index: 10;
+    text-align: center; padding: 32px 24px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    color: #6b7280; font-size: 13px;
+  }
+  footer .domain { color: #a78bfa; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+</style>
+</head>
+<body>
+  <div class="bg-gradient"></div>
+  <div class="bg-grid"></div>
+  <div class="dots" id="dots"></div>
+
+  <main class="wrap">
+    <div class="logo" aria-label="Infinity Engine logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18.178 8c5.096 0 5.096 8 0 8-5.095 0-7.133-8-12.739-8-4.585 0-4.585 8 0 8 5.606 0 7.644-8 12.74-8z"/>
+      </svg>
+    </div>
+
+    <span class="badge">Coming soon</span>
+
+    <h1>INFINITY<br><span class="line2">ENGINE</span></h1>
+
+    <p class="subline">Our site is on the way.</p>
+
+    <p class="contact-note">
+      For inquiries:
+      <br>
+      <a href="mailto:ash@infinityengine.ai">ash@infinityengine.ai</a>
+    </p>
+  </main>
+
+  <footer>
+    <div>&copy; <span id="year"></span> Infinity Engine LLC &middot; <span class="domain">infinityengine.ai</span></div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Floating dots
+    const dotsEl = document.getElementById('dots');
+    for (let i = 0; i < 36; i++) {
+      const d = document.createElement('div');
+      d.className = 'dot';
+      const size = Math.random() * 4 + 1.5;
+      d.style.width = size + 'px';
+      d.style.height = size + 'px';
+      d.style.left = Math.random() * 100 + 'vw';
+      d.style.bottom = '-5vh';
+      d.style.animationDuration = (Math.random() * 12 + 10) + 's';
+      d.style.animationDelay = (Math.random() * 12) + 's';
+      d.style.opacity = Math.random() * 0.5 + 0.3;
+      dotsEl.appendChild(d);
+    }
+  </script>
+</body>
+</html>
