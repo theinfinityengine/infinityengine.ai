@@ -1,0 +1,433 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Restaurant Experience App</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<style>
+  /* Layout: centered phone mock, a role switcher above it. One app: guests match before + rate after, staff see the rollups.
+     Brand: pink-to-orange, Anton display, Poppins body. */
+  :root{
+    --bg:#EFF1F4; --panel:#E5E8ED; --surface:#FFFFFF; --surface-2:#F6F8FA;
+    --ink:#1A1C20; --muted:#686D76; --faint:#99A0A9; --line:#E1E4EA;
+    --pink:#EC4899; --orange:#F97316; --violet:#7C3AED; --cyan:#06B6D4;
+    --accent:#E0447E; --accent-weak:#FCE7F0; --gold:#E8A838;
+    --grad:linear-gradient(120deg,#7C3AED,#EC4899 52%,#F97316);
+    --grad2:linear-gradient(120deg,#EC4899,#F97316);
+    --good:#3E7D5C; --warn:#A97C2C; --bad:#AD4A3E;
+    --good-tint:#E8F0EB; --warn-tint:#F4EDDC; --bad-tint:#F3E5E2;
+    --device:#262A30; --device-line:#353A41;
+    --shadow-sm:0 1px 2px rgba(18,22,28,.06);
+    --shadow:0 8px 24px rgba(18,22,28,.10);
+    --shadow-lg:0 26px 64px rgba(18,22,28,.22);
+    --card-shadow:0 14px 36px rgba(124,58,237,.14);
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+    --bg:#0F1114; --panel:#1A1D22; --surface:#191B1F; --surface-2:#20242A;
+    --ink:#F1F3F6; --muted:#A3A9B2; --faint:#747A84; --line:#2A2E35;
+    --pink:#F472B6; --orange:#FB923C; --violet:#A78BFA; --cyan:#22D3EE;
+    --accent:#F472B6; --accent-weak:#2A1222; --gold:#F0BE5E;
+    --good:#6CBE93; --warn:#D4A657; --bad:#D37C6E;
+    --good-tint:#17251D; --warn-tint:#272013; --bad-tint:#271815;
+    --device:#000000; --device-line:#2A2E35;
+    --shadow-sm:0 1px 2px rgba(0,0,0,.4); --shadow:0 8px 24px rgba(0,0,0,.45); --shadow-lg:0 26px 64px rgba(0,0,0,.6); --card-shadow:0 14px 36px rgba(0,0,0,.5);
+    color-scheme:dark;
+  }}
+  :root[data-theme="dark"]{
+    --bg:#0F1114; --panel:#1A1D22; --surface:#191B1F; --surface-2:#20242A;
+    --ink:#F1F3F6; --muted:#A3A9B2; --faint:#747A84; --line:#2A2E35;
+    --pink:#F472B6; --orange:#FB923C; --violet:#A78BFA; --cyan:#22D3EE;
+    --accent:#F472B6; --accent-weak:#2A1222; --gold:#F0BE5E;
+    --good:#6CBE93; --warn:#D4A657; --bad:#D37C6E;
+    --good-tint:#17251D; --warn-tint:#272013; --bad-tint:#271815;
+    --device:#000000; --device-line:#2A2E35;
+    --shadow-sm:0 1px 2px rgba(0,0,0,.4); --shadow:0 8px 24px rgba(0,0,0,.45); --shadow-lg:0 26px 64px rgba(0,0,0,.6); --card-shadow:0 14px 36px rgba(0,0,0,.5);
+    color-scheme:dark;
+  }
+
+  *{box-sizing:border-box}
+  body{background:var(--bg); color:var(--ink); font-family:Poppins,system-ui,sans-serif; line-height:1.5; -webkit-font-smoothing:antialiased}
+  .wrap{padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px)); padding-block:26px 40px; max-width:760px; margin:0 auto}
+
+  .appbar{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:6px}
+  .brand{display:flex; align-items:center; gap:12px}
+  .brand .mark{width:44px; height:44px; border-radius:12px; background:var(--grad2); display:grid; place-items:center; color:#fff; font-family:Anton,sans-serif; font-size:17px; letter-spacing:.5px; box-shadow:var(--shadow-sm)}
+  .brand h1{font-family:Anton,sans-serif; font-weight:400; font-size:24px; letter-spacing:.3px; margin:0; line-height:1}
+  .brand .tag{font-size:12px; color:var(--muted); margin-top:3px}
+  .tbtn{border:1px solid var(--line); background:var(--surface); color:var(--muted); width:40px; height:40px; border-radius:11px; font-size:16px; cursor:pointer; display:grid; place-items:center}
+  .tbtn:hover{color:var(--ink)}
+
+  .lede{color:var(--muted); font-size:14px; max-width:62ch; margin:14px 0 16px}
+  .lede b{color:var(--ink); font-weight:600}
+
+  .seg{display:flex; gap:4px; background:var(--panel); padding:4px; border-radius:14px; margin-bottom:8px}
+  .seg button{flex:1; border:0; background:transparent; color:var(--muted); font-family:Poppins,sans-serif; font-weight:600; font-size:13.5px; padding:10px 6px; border-radius:11px; cursor:pointer; transition:color .15s, background .15s, box-shadow .15s}
+  .seg button .sub{display:block; font-weight:500; font-size:10px; color:inherit; opacity:.7; margin-top:1px}
+  .seg button[aria-selected="true"]{background:var(--grad2); color:#fff; box-shadow:var(--shadow-sm)}
+  .caption{color:var(--faint); font-size:12.5px; margin:0 0 18px; min-height:16px}
+
+  .stage{display:flex; justify-content:center}
+  .device{width:100%; max-width:378px; background:var(--device); border-radius:46px; padding:12px; box-shadow:var(--shadow-lg); border:1px solid var(--device-line)}
+  .screen{background:var(--surface); border-radius:35px; height:686px; overflow:hidden; display:flex; flex-direction:column; position:relative}
+  .statusbar{display:flex; align-items:center; justify-content:space-between; padding:11px 24px 3px; flex:none}
+  .statusbar .time{font-size:13px; font-weight:600; color:var(--ink); letter-spacing:.3px; font-variant-numeric:tabular-nums}
+  .statusbar .ic{display:flex; align-items:center; gap:6px; color:var(--ink)}
+
+  .foot{margin:22px auto 0; max-width:62ch; text-align:center; color:var(--faint); font-size:12px}
+  .foot b{color:var(--muted); font-weight:600}
+
+  .scr{flex:1; display:flex; flex-direction:column; padding:6px 20px 18px; overflow-y:auto; animation:fade .22s ease}
+  @keyframes fade{from{opacity:0; transform:translateY(4px)} to{opacity:1}}
+  @media (prefers-reduced-motion:reduce){.scr{animation:none}}
+  .eyebrow{font-size:10.5px; font-weight:600; letter-spacing:1.8px; text-transform:uppercase; color:var(--accent)}
+  .scr h2{font-family:Anton,sans-serif; font-weight:400; font-size:22px; line-height:1.1; letter-spacing:.3px; margin:3px 0 0}
+  .muted{color:var(--muted)} .tnum{font-variant-numeric:tabular-nums}
+  .seclabel{font-size:10.5px; letter-spacing:1.4px; text-transform:uppercase; color:var(--faint); font-weight:600; margin:0 2px 10px}
+  .avatar{border-radius:50%; background:var(--grad); color:#fff; display:grid; place-items:center; font-family:Anton,sans-serif; flex:none}
+  .avatar.ink{background:var(--ink); color:var(--surface)}
+
+  /* guest sub-nav */
+  .subseg{display:flex; background:var(--surface-2); border:1px solid var(--line); border-radius:12px; padding:3px; gap:3px; margin:4px 0 12px}
+  .subseg button{flex:1; border:0; background:transparent; color:var(--muted); font-family:Poppins,sans-serif; font-weight:600; font-size:12px; padding:8px 4px; border-radius:9px; cursor:pointer}
+  .subseg button.on{background:var(--surface); color:var(--ink); box-shadow:var(--shadow-sm)}
+
+  /* chips / prefs */
+  .prefs{display:flex; flex-wrap:wrap; gap:8px}
+  .pchip{border:1.5px solid var(--line); background:var(--surface); color:var(--ink); border-radius:13px; padding:9px 12px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:Poppins,sans-serif; display:flex; align-items:center; gap:7px}
+  .pchip[aria-pressed="true"]{border-color:var(--pink); background:var(--accent-weak); color:var(--accent); font-weight:600}
+
+  .cta{border:0; width:100%; background:var(--grad2); color:#fff; font-family:Poppins,sans-serif; font-weight:700; font-size:15px; padding:14px; border-radius:14px; cursor:pointer; box-shadow:var(--shadow); letter-spacing:.2px}
+  .cta:disabled{opacity:.5; cursor:default; box-shadow:none}
+  .cta.ghost{background:none; color:var(--muted); box-shadow:none; font-weight:600}
+  .cta.dark{background:var(--ink); color:var(--surface)}
+
+  /* match rows */
+  .mrow{display:flex; align-items:center; gap:12px; border:1px solid var(--line); background:var(--surface); border-radius:16px; padding:12px; margin-bottom:10px}
+  .mrow .nm{font-weight:600; font-size:14.5px; color:var(--ink)}
+  .mrow .mt{font-size:11px; color:var(--muted); margin-top:1px}
+  .mrow .pct{font-family:Anton,sans-serif; font-size:17px; color:var(--accent); line-height:1}
+  .mrow .pl{font-size:8px; color:var(--muted); letter-spacing:.3px; text-transform:uppercase; text-align:center}
+  .reqbtn{border:0; background:var(--grad2); color:#fff; font-family:Poppins,sans-serif; font-weight:600; font-size:12px; padding:8px 13px; border-radius:10px; cursor:pointer; flex:none}
+  .tagwrap{display:flex; flex-wrap:wrap; gap:5px; margin-top:7px}
+  .tg{border:1px solid var(--line); background:var(--surface-2); color:var(--muted); border-radius:999px; padding:3px 8px; font-size:10px; font-weight:500}
+  .tg.on{border-color:var(--pink); background:var(--accent-weak); color:var(--accent); font-weight:600}
+
+  /* rate */
+  .q{margin:14px 0 0}
+  .qlabel{font-size:13px; font-weight:600; color:var(--ink); margin-bottom:8px}
+  .qopts{display:flex; gap:9px}
+  .qopt{flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; border:1px solid var(--line); background:var(--surface); border-radius:15px; padding:11px 4px 9px; cursor:pointer; font-family:Poppins,sans-serif; font-size:11px; color:var(--muted); font-weight:500}
+  .qopt.sel.green{border-color:var(--good); background:var(--good-tint); color:var(--good); font-weight:600}
+  .qopt.sel.yellow{border-color:var(--warn); background:var(--warn-tint); color:var(--warn); font-weight:600}
+  .qopt.sel.red{border-color:var(--bad); background:var(--bad-tint); color:var(--bad); font-weight:600}
+  .scale{display:flex; gap:5px}
+  .num{flex:1; min-width:0; height:38px; border:1px solid var(--line); background:var(--surface); border-radius:10px; font-family:Poppins,sans-serif; font-weight:600; font-size:13px; color:var(--muted); cursor:pointer; font-variant-numeric:tabular-nums}
+  .num.sel.band-green{background:var(--good); border-color:var(--good); color:#fff}
+  .num.sel.band-yellow{background:var(--warn); border-color:var(--warn); color:#fff}
+  .num.sel.band-red{background:var(--bad); border-color:var(--bad); color:#fff}
+
+  .centerscr{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:22px; gap:4px}
+  .centerscr .big{font-family:Anton,sans-serif; font-size:26px; line-height:1.05; background:var(--grad); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent; margin-bottom:4px}
+  .centerscr .av{width:84px; height:84px; font-size:32px; margin-bottom:12px; box-shadow:var(--card-shadow)}
+  .centerscr p{font-size:13px; color:var(--muted); max-width:28ch; line-height:1.55; margin:6px 0 0}
+  .note{background:var(--surface-2); border:1px solid var(--line); border-radius:13px; padding:11px 13px; font-size:12.5px; color:var(--ink); margin-top:14px; font-style:italic}
+
+  /* dashboard bits */
+  .scorewrap{display:flex; align-items:center; gap:14px; background:var(--surface-2); border:1px solid var(--line); border-radius:18px; padding:16px}
+  .bignum{font-family:Anton,sans-serif; font-size:30px; line-height:.95}
+  .summary{display:flex; gap:8px; margin:14px 0 16px}
+  .sumcard{flex:1; background:var(--surface-2); border:1px solid var(--line); border-radius:14px; padding:11px 6px; text-align:center}
+  .sumcard .n{font-family:Anton,sans-serif; font-size:21px; line-height:1}
+  .sumcard .k{font-size:9px; color:var(--muted); margin-top:3px; letter-spacing:.3px; text-transform:uppercase}
+  .sumcard.green .n{color:var(--good)} .sumcard.yellow .n{color:var(--warn)} .sumcard.red .n{color:var(--bad)}
+  .list{display:flex; flex-direction:column; gap:9px}
+  .row{display:flex; align-items:center; gap:11px; width:100%; text-align:left; border:1px solid var(--line); background:var(--surface); border-radius:15px; padding:10px 12px; font-family:Poppins,sans-serif}
+  .row.tap{cursor:pointer} .row.tap:hover{border-color:var(--muted)}
+  .row .nm{font-weight:600; font-size:14px; color:var(--ink)}
+  .row .mt{font-size:11px; color:var(--muted); margin-top:1px}
+  .row .right{margin-left:auto; display:flex; align-items:center; gap:9px}
+  .trend{font-size:11.5px; font-weight:600; font-variant-numeric:tabular-nums}
+  .trend.up{color:var(--good)} .trend.down{color:var(--bad)} .trend.flat{color:var(--faint)}
+  .pill{display:inline-flex; align-items:center; gap:5px; font-weight:600; font-size:11px; padding:4px 10px; border-radius:999px}
+  .pill.green{background:var(--good-tint); color:var(--good)} .pill.yellow{background:var(--warn-tint); color:var(--warn)} .pill.red{background:var(--bad-tint); color:var(--bad)}
+  .stat3{display:flex; gap:8px}
+  .stat{flex:1; background:var(--surface-2); border:1px solid var(--line); border-radius:13px; padding:11px 8px; text-align:center}
+  .stat .n{font-family:Anton,sans-serif; font-size:21px; line-height:1; color:var(--ink)}
+  .stat .k{font-size:9px; color:var(--muted); margin-top:3px; letter-spacing:.3px; text-transform:uppercase}
+  .week{display:flex; align-items:flex-end; gap:7px; height:66px; padding:4px 2px}
+  .week .day{flex:1; display:flex; flex-direction:column; align-items:center; gap:5px}
+  .week .bar{width:100%; border-radius:5px 5px 2px 2px}
+  .week .dl{font-size:9.5px; color:var(--faint)}
+  .dims4{display:grid; grid-template-columns:repeat(4,1fr); gap:8px}
+  .dimc{background:var(--surface-2); border:1px solid var(--line); border-radius:12px; padding:10px 3px 8px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:4px}
+  .dimc .dv{font-family:Anton,sans-serif; font-size:14px; line-height:1}
+  .dimc .dk{font-size:8.5px; color:var(--muted); font-weight:600; letter-spacing:.3px; text-transform:uppercase}
+  .fbcard{border:1px solid var(--line); background:var(--surface-2); border-radius:13px; padding:11px 12px; display:flex; flex-direction:column; gap:8px}
+  .fbdims{display:flex; flex-wrap:wrap; gap:12px}
+  .fbdim{display:flex; flex-direction:column; align-items:center; gap:3px; font-size:8.5px; color:var(--muted); font-weight:600; letter-spacing:.3px; text-transform:uppercase}
+  .scorebadge{display:grid; place-items:center; width:24px; height:24px; border-radius:7px; color:#fff; font-weight:700; font-size:11px; font-variant-numeric:tabular-nums}
+  .scorebadge.band-green{background:var(--good)} .scorebadge.band-yellow{background:var(--warn)} .scorebadge.band-red{background:var(--bad)}
+  .fbcard .nt{font-size:12.5px; color:var(--ink)}
+  .fbcard .meta{font-size:10px; color:var(--faint)}
+  .stars{color:var(--gold); letter-spacing:1px; font-size:12px}
+
+  :focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+  @media (max-width:430px){ .device{max-width:100%} }
+</style>
+
+<div class="wrap">
+  <div class="appbar">
+    <div class="brand">
+      <div class="mark">REA</div>
+      <div>
+        <h1>Restaurant Experience App</h1>
+        <div class="tag">The whole visit, one app.</div>
+      </div>
+    </div>
+    <button class="tbtn" data-action="theme" aria-label="Toggle light or dark">◐</button>
+  </div>
+
+  <p class="lede">The accountability ratings and the server matching, together in one product. A guest is <b>paired</b> with the right server before they sit, and <b>rates</b> the visit after. Everything rolls up for the crew, the manager, and the owner. Switch roles to see each side.</p>
+
+  <div class="seg" role="tablist" aria-label="Role">
+    <button role="tab" data-action="role" data-value="guest" aria-selected="true">Guest<span class="sub">dine</span></button>
+    <button role="tab" data-action="role" data-value="crew" aria-selected="false">Crew<span class="sub">scorecard</span></button>
+    <button role="tab" data-action="role" data-value="manager" aria-selected="false">Manager<span class="sub">floor</span></button>
+    <button role="tab" data-action="role" data-value="owner" aria-selected="false">Owner<span class="sub">whole venue</span></button>
+  </div>
+  <p class="caption" id="caption"></p>
+
+  <div class="stage">
+    <div class="device">
+      <div class="screen">
+        <div class="statusbar">
+          <span class="time">9:41</span>
+          <span class="ic">
+            <svg width="18" height="11" viewBox="0 0 18 11" fill="currentColor" aria-hidden="true"><rect x="0" y="7.5" width="3" height="3.5" rx="1"/><rect x="5" y="4.5" width="3" height="6.5" rx="1"/><rect x="10" y="2" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="11" rx="1"/></svg>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><path d="M1.5 4.5a9 9 0 0 1 13 0"/><path d="M4 7a5.5 5.5 0 0 1 8 0"/><path d="M6.4 9.4a2 2 0 0 1 3.2 0"/></svg>
+            <svg width="25" height="12" viewBox="0 0 25 12" aria-hidden="true"><rect x=".6" y=".6" width="21" height="10.8" rx="3" fill="none" stroke="currentColor" stroke-opacity=".4" stroke-width="1.2"/><rect x="2.2" y="2.2" width="15" height="7.6" rx="1.6" fill="currentColor"/><rect x="23" y="4" width="1.6" height="4" rx="1" fill="currentColor" fill-opacity=".5"/></svg>
+          </span>
+        </div>
+        <div id="screen" style="display:flex; flex-direction:column; flex:1; min-height:0"></div>
+      </div>
+    </div>
+  </div>
+
+  <p class="foot">A clickable concept, not a finished app. Names and ratings are examples. Built for <b>Neil</b> by <b>Infinity Engine</b>.</p>
+</div>
+
+<script>
+(function(){
+  const screen=document.getElementById('screen');
+  const caption=document.getElementById('caption');
+
+  const TAGS={ fast:{l:'Fast',ic:'⚡'}, chatty:{l:'Chatty',ic:'💬'}, menu:{l:'Menu expert',ic:'📖'}, wine:{l:'Wine',ic:'🍷'}, allergy:{l:'Allergy-aware',ic:'🌱'}, kids:{l:'Great with kids',ic:'🧸'}, lowkey:{l:'Low-key',ic:'🌙'} };
+
+  const SERVERS=[
+    {id:'maya',name:'Maya R.',spec:'Dietary needs & specials',bio:'Four years here. Memorizes your allergies and talks you into the right special.',tags:['allergy','menu','chatty'],rating:4.9,status:'green',avg:9.2,today:12,trend:+0.4,streak:5,
+      week:[['M',8.8],['T',9.4],['W',9.1],['T',8.6],['F',9.2],['S',0],['S',0]],
+      fb:[{speed:'green',food:'green',engage:'green',score:10,note:'Maya remembered our allergy. Amazing.',when:'7:10 PM · Table 4'},{speed:'green',food:'green',engage:'green',score:9,note:'Friendly and quick.',when:'6:30 PM · Table 14'},{speed:'green',food:'yellow',engage:'green',score:9,note:'',when:'6:00 PM · Table 1'}]},
+    {id:'luis',name:'Luis M.',spec:'Wine & cocktails',bio:'Resident sommelier-in-training. Ask what to drink and settle in.',tags:['wine','menu','chatty'],rating:4.8,status:'green',avg:9.0,today:10,trend:+0.2,streak:3,
+      week:[['M',8.9],['T',9.0],['W',9.2],['T',8.7],['F',9.0],['S',0],['S',0]],
+      fb:[{speed:'green',food:'green',engage:'green',score:9,note:'Perfect wine pick.',when:'7:00 PM · Table 6'},{speed:'green',food:'green',engage:'yellow',score:9,note:'',when:'6:20 PM · Table 3'}]},
+    {id:'devin',name:'Devin T.',spec:'Quick turns',bio:'In and out, no fuss. Perfect with a reservation to make.',tags:['fast','lowkey'],rating:4.7,status:'green',avg:8.6,today:9,trend:0,streak:2,
+      week:[['M',8.5],['T',8.7],['W',8.4],['T',8.6],['F',8.8],['S',0],['S',0]],
+      fb:[{speed:'green',food:'yellow',engage:'green',score:8,note:'Solid, no complaints.',when:'6:40 PM · Table 9'}]},
+    {id:'priya',name:'Priya S.',spec:'Families & big tables',bio:'The table with kids always asks for her.',tags:['kids','chatty','allergy'],rating:4.5,status:'yellow',avg:7.4,today:7,trend:-0.5,streak:0,
+      week:[['M',7.8],['T',7.2],['W',7.5],['T',7.0],['F',7.4],['S',0],['S',0]],
+      fb:[{speed:'yellow',food:'green',engage:'yellow',score:7,note:'A little slow but kind.',when:'6:15 PM · Table 8'}]},
+    {id:'sam',name:'Sam W.',spec:'Date nights & solo diners',bio:'Reads the room. Chatty if you are, invisible if you are not.',tags:['lowkey','fast','wine'],rating:4.6,status:'yellow',avg:7.0,today:5,trend:0,streak:1,
+      week:[['M',7.1],['T',6.9],['W',7.0],['T',7.2],['F',7.0],['S',0],['S',0]],
+      fb:[{speed:'yellow',food:'green',engage:'yellow',score:7,note:'Fine overall.',when:'6:05 PM · Table 2'}]}
+  ];
+  const BY=Object.fromEntries(SERVERS.map(s=>[s.id,s]));
+  const MOOD={green:{tok:'--good',label:'On track'},yellow:{tok:'--warn',label:'Watch'},red:{tok:'--bad',label:'Needs attention'}};
+
+  const S={
+    role:'guest',
+    gtab:'before',
+    g:{ prefs:new Set(), matchedId:null, rated:false, rate:{speed:null,food:null,engage:null,score:null} },
+    regulars:['maya'],
+    mgrSel:null
+  };
+
+  const CAP={ guest:"The guest journey: match before, rate after.", crew:"What a server sees about their shift.", manager:"What a manager sees across the floor.", owner:"What the owner sees across the venue." };
+
+  function band(n){ return n<=4?'red':n<=7?'yellow':'green'; }
+  function initials(n){ return n.split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase(); }
+  function stars(r){ const f=Math.round(r); return '★'.repeat(f)+'☆'.repeat(5-f); }
+  function matchPct(prefs,s){ const base=60+(s.rating-4.4)*18; if(!prefs.size) return Math.round(Math.min(97,base+8)); let hit=0; prefs.forEach(p=>{if(s.tags.includes(p))hit++;}); return Math.round(Math.min(98,55+(hit/prefs.size)*42+(s.rating-4.4)*10)); }
+  function smiley(kind,size){ const m=kind==='green'?'M15 36 Q32 49 49 36':kind==='yellow'?'M18 39 L46 39':'M15 44 Q32 33 49 44'; const c=`var(${MOOD[kind].tok})`;
+    return `<svg viewBox="0 0 64 64" width="${size}" height="${size}" aria-hidden="true" style="flex:none"><circle cx="32" cy="32" r="29" fill="color-mix(in srgb, ${c} 13%, transparent)" stroke="${c}" stroke-width="2.6"/><circle cx="23" cy="26" r="3.4" fill="${c}"/><circle cx="41" cy="26" r="3.4" fill="${c}"/><path d="${m}" fill="none" stroke="${c}" stroke-width="3" stroke-linecap="round"/></svg>`; }
+
+  /* ---------------- GUEST ---------------- */
+  function guest(){
+    const sub=`<div class="subseg">
+      <button class="${S.gtab==='before'?'on':''}" data-action="gtab" data-value="before">1 · Before</button>
+      <button class="${S.gtab==='after'?'on':''}" data-action="gtab" data-value="after">2 · After</button>
+      <button class="${S.gtab==='regulars'?'on':''}" data-action="gtab" data-value="regulars">Regulars</button>
+    </div>`;
+    return `<div class="scr">${sub}${S.gtab==='before'?guestBefore():S.gtab==='after'?guestAfter():guestRegulars()}</div>`;
+  }
+  function guestBefore(){
+    const g=S.g;
+    if(g.matchedId){ const s=BY[g.matchedId]; const pct=matchPct(g.prefs,s);
+      return `<div class="centerscr" style="padding-top:20px">
+        <div class="big">It's a pairing!</div>
+        <div class="avatar av">${initials(s.name)}</div>
+        <div style="font-family:Anton,sans-serif; font-size:20px">${s.name}</div>
+        <p><b style="color:var(--accent)">${pct}% match.</b> ${s.name.split(' ')[0]} will take care of your table tonight.</p>
+        <div class="note">"Can't wait to take care of you. Be right over." — ${s.name.split(' ')[0]}</div>
+        <button class="cta" data-action="go-after" style="margin-top:16px">After your meal, rate the visit →</button>
+        <button class="cta ghost" data-action="rematch" style="margin-top:4px; flex:none">Start over</button>
+      </div>`;
+    }
+    const ranked=SERVERS.slice().sort((a,b)=>matchPct(g.prefs,b)-matchPct(g.prefs,a));
+    return `<div style="display:flex; flex-direction:column; flex:1; min-height:0">
+      <div class="eyebrow">Before you sit · find your server</div>
+      <h2 style="font-size:19px; margin:3px 0 4px">What are you in the mood for?</h2>
+      <div class="prefs" style="margin-bottom:12px">${Object.entries(TAGS).map(([k,t])=>`<button class="pchip" data-action="pref" data-value="${k}" aria-pressed="${g.prefs.has(k)}"><span>${t.ic}</span>${t.l}</button>`).join('')}</div>
+      <div class="seclabel">Your best matches</div>
+      <div style="overflow-y:auto; flex:1">
+        ${ranked.map(s=>{ const pct=matchPct(g.prefs,s); return `<div class="mrow" style="flex-wrap:wrap">
+          <div class="avatar" style="width:42px;height:42px;font-size:15px">${initials(s.name)}</div>
+          <div style="flex:1; min-width:0"><div class="nm">${s.name}</div><div class="mt"><span class="stars">${stars(s.rating)}</span> ${s.rating.toFixed(1)} · ${s.spec}</div></div>
+          <div><div class="pct tnum">${pct}%</div><div class="pl">match</div></div>
+          <button class="reqbtn" data-action="pairwith" data-value="${s.id}">Request</button>
+          <div class="tagwrap" style="flex-basis:100%">${s.tags.map(t=>`<span class="tg ${g.prefs.has(t)?'on':''}">${TAGS[t].ic} ${TAGS[t].l}</span>`).join('')}</div>
+        </div>`; }).join('')}
+      </div>
+    </div>`;
+  }
+  function moodQ(key,title,labels){ const sel=S.g.rate[key];
+    return `<div class="q"><div class="qlabel">${title}</div><div class="qopts">${['green','yellow','red'].map(k=>`<button class="qopt ${k} ${sel===k?'sel':''}" data-action="rq" data-key="${key}" data-value="${k}">${smiley(k,30)}<span>${labels[k]}</span></button>`).join('')}</div></div>`;
+  }
+  function guestAfter(){
+    const g=S.g;
+    if(g.rated){ const ov=g.rate.score==null?'green':band(g.rate.score); const sv=g.matchedId?BY[g.matchedId]:BY.maya;
+      return `<div class="centerscr" style="padding-top:24px">
+        ${smiley(ov,58).replace('<svg','<svg style="margin-bottom:12px"')}
+        <h2>Thanks for the feedback</h2>
+        <p>It goes to the manager, and ${sv.name.split(' ')[0]}'s scorecard updates in real time.</p>
+        <button class="cta" data-action="add-regular" data-value="${sv.id}" style="margin-top:18px">${S.regulars.includes(sv.id)?'✓ In your regulars':'Add '+sv.name.split(' ')[0]+' to regulars'}</button>
+        <button class="cta ghost" data-action="rate-again" style="margin-top:4px; flex:none">Start over</button>
+      </div>`;
+    }
+    const sv=g.matchedId?BY[g.matchedId]:BY.maya; const nums=Array.from({length:10},(_,i)=>i+1); const r=g.rate;
+    const ready=r.speed&&r.food&&r.engage&&r.score;
+    return `<div style="display:flex; flex-direction:column; flex:1; min-height:0; overflow-y:auto">
+      <div class="eyebrow">After your meal · rate the visit</div>
+      <div style="display:flex; align-items:center; gap:11px; margin:6px 0 0"><div class="avatar" style="width:38px;height:38px;font-size:14px">${initials(sv.name)}</div><div style="font-family:Anton,sans-serif;font-size:17px">How was ${sv.name.split(' ')[0]}?</div></div>
+      ${moodQ('speed','Speed of service',{green:'Fast',yellow:'Okay',red:'Slow'})}
+      ${moodQ('food','Food came out right',{green:'Spot on',yellow:'Mix-up',red:'Wrong'})}
+      ${moodQ('engage','Friendly & attentive',{green:'Great',yellow:'Okay',red:'Lacking'})}
+      <div class="q"><div class="qlabel">Overall experience <span class="muted">out of 10</span></div><div class="scale">${nums.map(n=>`<button class="num band-${band(n)} ${r.score===n?'sel':''}" data-action="rscore" data-value="${n}">${n}</button>`).join('')}</div></div>
+      <button class="cta" data-action="submit-rate" style="margin-top:14px" ${ready?'':'disabled'}>${ready?'Send feedback':'Answer all four'}</button>
+    </div>`;
+  }
+  function guestRegulars(){
+    if(!S.regulars.length){ return `<div class="centerscr"><div style="font-size:38px">💛</div><div style="font-family:Anton,sans-serif;font-size:18px">No regulars yet</div><p>Pair with a server and add them here for one-tap requests next time.</p></div>`; }
+    return `<div style="display:flex; flex-direction:column; flex:1; min-height:0; overflow-y:auto">
+      <div class="eyebrow">Your regulars</div>
+      <h2 style="font-size:19px; margin:3px 0 12px">Favorites, one tap away</h2>
+      ${S.regulars.map(id=>{ const s=BY[id]; return `<div class="mrow" style="flex-wrap:wrap">
+        <div class="avatar" style="width:42px;height:42px;font-size:15px">${initials(s.name)}</div>
+        <div style="flex:1; min-width:0"><div class="nm">${s.name}</div><div class="mt"><span class="stars">${stars(s.rating)}</span> ${s.rating.toFixed(1)} · ${s.spec}</div></div>
+        <button class="reqbtn" data-action="request-again" data-value="${id}">Request again</button>
+      </div>`; }).join('')}
+    </div>`;
+  }
+
+  /* ---------------- CREW ---------------- */
+  function crew(){
+    const me=BY.maya; const max=10;
+    return `<div class="scr" style="padding-bottom:0">
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:4px 2px 10px">
+        <div><div class="eyebrow">Your shift · Friday</div><h2 style="font-size:19px">Hey, Maya</h2></div><div class="avatar" style="width:38px;height:38px;font-size:14px">MR</div>
+      </div>
+      <div class="scorewrap" style="margin-bottom:14px">${smiley('green',48)}<div><div class="muted" style="font-size:12px">You're</div><div class="bignum" style="color:var(--good)">On track</div></div>
+        <div style="margin-left:auto;text-align:right"><div style="font-family:Anton,sans-serif;font-size:24px">${me.avg.toFixed(1)}</div><div class="mt" style="font-size:11px;color:var(--muted)">avg / 10</div></div></div>
+      <div class="stat3" style="margin-bottom:16px"><div class="stat"><div class="n tnum">${me.today}</div><div class="k">ratings today</div></div><div class="stat"><div class="n tnum">${me.streak}</div><div class="k">day streak</div></div><div class="stat"><div class="n tnum">3</div><div class="k">asking for you</div></div></div>
+      <div class="seclabel">This week</div>
+      <div class="week" style="margin-bottom:16px">${me.week.map(([d,v])=>`<div class="day"><div class="bar" style="height:${v?Math.max(10,(v/max)*50):6}px; background:${v?'var(--good)':'var(--line)'}"></div><div class="dl">${d}</div></div>`).join('')}</div>
+      <div class="seclabel">What guests said</div>
+      <div class="list" style="padding-bottom:16px">${me.fb.map(fbCard).join('')}</div>
+    </div>`;
+  }
+  function fbCard(f){ const dims=[['Speed',f.speed],['Food',f.food],['Service',f.engage]];
+    return `<div class="fbcard"><div class="fbdims">${dims.map(([l,m])=>`<div class="fbdim">${smiley(m,22)}<span>${l}</span></div>`).join('')}<div class="fbdim"><span class="scorebadge band-${band(f.score)}">${f.score}</span><span>of 10</span></div></div>${f.note?`<div class="nt">${f.note}</div>`:''}<div class="meta">${f.when}</div></div>`;
+  }
+
+  /* ---------------- MANAGER ---------------- */
+  function manager(){
+    if(S.mgrSel){ const s=BY[S.mgrSel];
+      return `<div class="scr" style="padding-bottom:0">
+        <button class="cta ghost" data-action="mgr-back" style="align-self:flex-start; width:auto; padding:6px 0; margin-bottom:4px">‹ Floor</button>
+        <div class="scorewrap" style="margin-bottom:14px"><div class="avatar" style="width:50px;height:50px;font-size:18px">${initials(s.name)}</div><div style="flex:1;min-width:0"><div style="font-family:Anton,sans-serif;font-size:20px">${s.name}</div><div style="margin-top:6px"><span class="pill ${s.status}">${smiley(s.status,15)} ${MOOD[s.status].label}</span></div></div>${smiley(s.status,40)}</div>
+        <div class="stat3" style="margin-bottom:16px"><div class="stat"><div class="n tnum">${s.avg.toFixed(1)}</div><div class="k">avg / 10</div></div><div class="stat"><div class="n tnum">${s.today}</div><div class="k">today</div></div><div class="stat"><div class="n tnum">${s.trend>=0?'+':''}${s.trend.toFixed(1)}</div><div class="k">vs last</div></div></div>
+        <div class="seclabel">Recent feedback</div><div class="list" style="padding-bottom:16px">${s.fb.map(fbCard).join('')}</div>
+      </div>`;
+    }
+    const counts={green:0,yellow:0,red:0}; SERVERS.forEach(s=>counts[s.status]++);
+    const rows=SERVERS.slice().sort((a,b)=>a.avg-b.avg);
+    return `<div class="scr" style="padding-bottom:0">
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:4px 2px 12px"><div><div class="eyebrow">Riverside Grill · live</div><h2 style="font-size:19px">Floor today</h2></div><div class="muted tnum" style="font-size:12px;text-align:right">Fri · Dinner<br>43 ratings</div></div>
+      <div class="summary"><div class="sumcard green"><div class="n">${counts.green}</div><div class="k">On track</div></div><div class="sumcard yellow"><div class="n">${counts.yellow}</div><div class="k">Watch</div></div><div class="sumcard red"><div class="n">${counts.red}</div><div class="k">Needs attn</div></div></div>
+      <div class="seclabel">Crew · tap for detail</div>
+      <div class="list" style="padding-bottom:16px">${rows.map(s=>{ const tc=s.trend>0?'up':s.trend<0?'down':'flat'; const ta=s.trend>0?'▲':s.trend<0?'▼':'–';
+        return `<button class="row tap" data-action="mgr-open" data-value="${s.id}"><div class="avatar" style="width:38px;height:38px;font-size:14px">${initials(s.name)}</div>${smiley(s.status,28)}<div><div class="nm">${s.name}</div><div class="mt tnum">${s.avg.toFixed(1)} / 10 · ${s.today} today</div></div><div class="right"><span class="trend ${tc} tnum">${ta} ${Math.abs(s.trend).toFixed(1)}</span></div></button>`; }).join('')}</div>
+    </div>`;
+  }
+
+  /* ---------------- OWNER ---------------- */
+  function owner(){
+    const dims=[['Speed','yellow','7.6'],['Food','green','8.9'],['Service','green','8.5'],['Overall','green','8.3']];
+    const locs=[['Riverside · Main','green',8.6],['Westside','yellow',7.5],['Airport','green',8.1]];
+    const max=10; const week=[['M',8.1],['T',8.5],['W',8.3],['T',8.0],['F',8.6],['S',0],['S',0]];
+    return `<div class="scr" style="padding-bottom:0">
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:4px 2px 12px"><div><div class="eyebrow">Riverside Grill · this week</div><h2 style="font-size:19px">The whole venue</h2></div><div class="avatar" style="width:38px;height:38px;font-size:14px">RG</div></div>
+      <div class="scorewrap" style="margin-bottom:14px">${smiley('green',46)}<div><div class="muted" style="font-size:12px">Guests are</div><div class="bignum" style="color:var(--good)">Happy</div></div><div style="margin-left:auto;text-align:right"><div style="font-family:Anton,sans-serif;font-size:24px">8.3</div><div class="mt" style="font-size:11px;color:var(--muted)">avg / 10</div></div></div>
+      <div class="stat3" style="margin-bottom:16px"><div class="stat"><div class="n tnum">312</div><div class="k">ratings</div></div><div class="stat"><div class="n tnum">4.6</div><div class="k">★ public</div></div><div class="stat"><div class="n tnum">96</div><div class="k">new regulars</div></div></div>
+      <div class="seclabel">By question</div>
+      <div class="dims4" style="margin-bottom:16px">${dims.map(([l,st,v])=>`<div class="dimc">${smiley(st,24)}<div class="dv">${v}</div><div class="dk">${l}</div></div>`).join('')}</div>
+      <div class="seclabel">This week</div>
+      <div class="week" style="margin-bottom:16px">${week.map(([d,v])=>`<div class="day"><div class="bar" style="height:${v?Math.max(10,(v/max)*50):6}px; background:${v?'var(--good)':'var(--line)'}"></div><div class="dl">${d}</div></div>`).join('')}</div>
+      <div class="seclabel">Locations</div>
+      <div class="list" style="padding-bottom:16px">${locs.map(([n,st,v])=>`<div class="row"><div class="avatar" style="width:34px;height:34px;font-size:12px;background:var(--panel);color:var(--muted)">${n[0]}</div>${smiley(st,26)}<div><div class="nm">${n}</div><div class="mt tnum">${v.toFixed(1)} / 10</div></div><div class="right"><span class="pill ${st}" style="font-size:10px">${MOOD[st].label}</span></div></div>`).join('')}</div>
+    </div>`;
+  }
+
+  /* ---------------- render ---------------- */
+  function render(){
+    caption.textContent=CAP[S.role];
+    document.querySelectorAll('.seg button').forEach(b=>b.setAttribute('aria-selected', b.dataset.value===S.role));
+    screen.innerHTML = S.role==='guest'?guest():S.role==='crew'?crew():S.role==='manager'?manager():owner();
+  }
+
+  document.body.addEventListener('click',e=>{
+    const el=e.target.closest('[data-action]'); if(!el) return;
+    const a=el.dataset.action, v=el.dataset.value;
+    switch(a){
+      case 'theme':{ const root=document.documentElement; const dark=root.getAttribute('data-theme')==='dark'||(!root.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme:dark)').matches); root.setAttribute('data-theme',dark?'light':'dark'); return; }
+      case 'role': S.role=v; S.mgrSel=null; render(); return;
+      case 'gtab': S.gtab=v; render(); return;
+      case 'pref': S.g.prefs.has(v)?S.g.prefs.delete(v):S.g.prefs.add(v); render(); return;
+      case 'pairwith': S.g.matchedId=v; render(); return;
+      case 'rematch': S.g.matchedId=null; render(); return;
+      case 'go-after': S.gtab='after'; render(); return;
+      case 'rq': S.g.rate[el.dataset.key]=v; render(); return;
+      case 'rscore': S.g.rate.score=+v; render(); return;
+      case 'submit-rate': S.g.rated=true; render(); return;
+      case 'rate-again': S.g.rate={speed:null,food:null,engage:null,score:null}; S.g.rated=false; S.gtab='before'; S.g.matchedId=null; render(); return;
+      case 'add-regular': if(!S.regulars.includes(v)) S.regulars.push(v); render(); return;
+      case 'request-again': S.g.matchedId=v; S.gtab='before'; render(); return;
+      case 'mgr-open': S.mgrSel=v; render(); return;
+      case 'mgr-back': S.mgrSel=null; render(); return;
+    }
+  });
+
+  render();
+})();
+</script>
+
+</body></html>
